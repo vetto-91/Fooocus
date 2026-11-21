@@ -899,6 +899,9 @@ with shared.gradio_root:
 
         if not args_manager.args.disable_preset_selection:
             def preset_selection_change(preset, is_generating, inpaint_mode):
+                if preset not in modules.config.available_presets:
+                    print(f'Blocked unknown preset selection: {preset}')
+                    preset = 'initial'
                 preset_content = modules.config.try_get_preset_content(preset) if preset != 'initial' else {}
                 preset_prepared = modules.meta_parser.parse_meta_from_preset(preset_content)
 
@@ -1124,5 +1127,5 @@ shared.gradio_root.launch(
     share=args_manager.args.share,
     auth=check_auth if (args_manager.args.share or args_manager.args.listen) and auth_enabled else None,
     allowed_paths=[modules.config.path_outputs],
-    blocked_paths=[constants.AUTH_FILENAME]
+    blocked_paths=[constants.AUTH_FILENAME, os.path.abspath(constants.AUTH_FILENAME)]
 )

@@ -10,8 +10,11 @@ def localization_js(filename):
     global current_translation
 
     if isinstance(filename, str):
-        full_name = os.path.abspath(os.path.join(localization_root, filename + '.json'))
-        if os.path.exists(full_name):
+        loc_root_abs = os.path.abspath(os.path.realpath(localization_root))
+        full_name = os.path.abspath(os.path.realpath(os.path.join(loc_root_abs, filename + '.json')))
+        if os.path.commonpath([loc_root_abs, full_name]) != loc_root_abs:
+            print(f'Blocked path traversal in localization filename: {filename}')
+        elif os.path.exists(full_name):
             try:
                 with open(full_name, encoding='utf-8') as f:
                     current_translation = json.load(f)
@@ -25,7 +28,8 @@ def localization_js(filename):
 
     # current_translation = {k: 'XXX' for k in current_translation.keys()}  # use this to see if all texts are covered
 
-    return f"window.localization = {json.dumps(current_translation)}"
+    safe_json = json.dumps(current_translation).replace('</', '<\\/')
+    return f"window.localization = {safe_json}"
 
 
 def dump_english_config(components):

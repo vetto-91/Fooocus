@@ -113,8 +113,11 @@ def update_presets():
 
 def try_get_preset_content(preset):
     if isinstance(preset, str):
-        preset_path = os.path.abspath(f'./presets/{preset}.json')
+        presets_dir = os.path.abspath('./presets')
+        preset_path = os.path.abspath(os.path.join(presets_dir, f'{preset}.json'))
         try:
+            if os.path.commonpath([presets_dir, preset_path]) != presets_dir:
+                raise ValueError(f'Path traversal detected in preset: {preset}')
             if os.path.exists(preset_path):
                 with open(preset_path, "r", encoding="utf-8") as json_file:
                     json_content = json.load(json_file)

@@ -1,14 +1,27 @@
 volumes:
   fooocus-data:
 
+networks:
+  # Se il tuo reverse proxy usa già una rete Docker esistente (es. "proxy" o "npm_default"),
+  # imposta "name: <nome-rete-esistente>" e decommenta "external: true".
+  reverse-proxy:
+    driver: bridge
+    # name: proxy
+    # external: true
+
 services:
   app:
     build: .
-    image: ghcr.io/lllyasviel/fooocus
-    ports:
-     - "7865:7865"
+    image: fooocus-local:patched
+    expose:
+      - "7865"
+    networks:
+      - reverse-proxy
     environment:
-      - CMDARGS=--listen    # Arguments for launch.py.
+      - CMDARGS=--listen --disable-analytics --disable-metadata
+      - GRADIO_ANALYTICS_ENABLED=False
+      - HF_HUB_DISABLE_TELEMETRY=1
+      - DO_NOT_TRACK=1
       - DATADIR=/content/data   # Directory which stores models, outputs dir
       - config_path=/content/data/config.txt
       - config_example_path=/content/data/config_modification_tutorial.txt

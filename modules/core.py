@@ -78,10 +78,22 @@ class StableDiffusionModel:
             if filename == 'None':
                 continue
 
-            if os.path.exists(filename):
-                lora_filename = filename
+            if os.path.isabs(filename) and os.path.exists(filename):
+                real_filename = os.path.abspath(os.path.realpath(filename))
+                allowed = any(
+                    os.path.commonpath([os.path.abspath(os.path.realpath(folder)), real_filename]) == os.path.abspath(os.path.realpath(folder))
+                    for folder in modules.config.paths_loras
+                )
+                if not allowed:
+                    print(f'Blocked LoRA path outside allowed directories: {filename}')
+                    continue
+                lora_filename = real_filename
             else:
-                lora_filename = get_file_from_folder_list(filename, modules.config.paths_loras)
+                try:
+                    lora_filename = get_file_from_folder_list(filename, modules.config.paths_loras)
+                except ValueError as e:
+                    print(f'Blocked invalid LoRA path: {e}')
+                    continue
 
             if not os.path.exists(lora_filename):
                 print(f'Lora file not found: {lora_filename}')
@@ -93,7 +105,7 @@ class StableDiffusionModel:
         self.clip_with_lora = self.clip.clone() if self.clip is not None else None
 
         for lora_filename, weight in loras_to_load:
-            lora_unmatch = ldm_patched.modules.utils.load_torch_file(lora_filename, safe_load=False)
+            lora_unmatch = ldm_patched.modules.utils.load_torch_file(lora_filename, safe_load=True)
             lora_unet, lora_unmatch = match_lora(lora_unmatch, self.lora_key_map_unet)
             lora_clip, lora_unmatch = match_lora(lora_unmatch, self.lora_key_map_clip)
 

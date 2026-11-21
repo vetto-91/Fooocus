@@ -1,3 +1,4 @@
+import html
 import os
 import args_manager
 import modules.config
@@ -104,17 +105,21 @@ def log(img, metadata, metadata_parser: MetadataParser | None = None, output_for
             else:
                 middle_part = existing_split[0]
 
-    div_name = only_name.replace('.', '_')
+    div_name = html.escape(only_name.replace('.', '_'), quote=True)
+    safe_only_name = html.escape(only_name, quote=True)
     item = f"<div id=\"{div_name}\" class=\"image-container\"><hr><table><tr>\n"
-    item += f"<td><a href=\"{only_name}\" target=\"_blank\"><img src='{only_name}' onerror=\"this.closest('.image-container').style.display='none';\" loading='lazy'/></a><div>{only_name}</div></td>"
+    item += f"<td><a href=\"{safe_only_name}\" target=\"_blank\"><img src='{safe_only_name}' onerror=\"this.closest('.image-container').style.display='none';\" loading='lazy'/></a><div>{safe_only_name}</div></td>"
     item += "<td><table class='metadata'>"
     for label, key, value in metadata:
-        value_txt = str(value).replace('\n', ' </br> ')
-        item += f"<tr><td class='label'>{label}</td><td class='value'>{value_txt}</td></tr>\n"
+        safe_label = html.escape(str(label), quote=True)
+        value_txt = html.escape(str(value), quote=True).replace('\n', ' </br> ')
+        item += f"<tr><td class='label'>{safe_label}</td><td class='value'>{value_txt}</td></tr>\n"
 
     if task is not None and 'positive' in task and 'negative' in task:
-        full_prompt_details = f"""<details><summary>Positive</summary>{', '.join(task['positive'])}</details>
-        <details><summary>Negative</summary>{', '.join(task['negative'])}</details>"""
+        safe_positive = html.escape(', '.join(str(x) for x in task['positive']), quote=True)
+        safe_negative = html.escape(', '.join(str(x) for x in task['negative']), quote=True)
+        full_prompt_details = f"""<details><summary>Positive</summary>{safe_positive}</details>
+        <details><summary>Negative</summary>{safe_negative}</details>"""
         item += f"<tr><td class='label'>Full raw prompt</td><td class='value'>{full_prompt_details}</td></tr>\n"
 
     item += "</table>"

@@ -373,12 +373,22 @@ def get_file_from_folder_list(name, folders):
     if not isinstance(folders, list):
         folders = [folders]
 
+    if not isinstance(name, str) or name == '':
+        raise ValueError(f"Invalid filename: {name}")
+
     for folder in folders:
-        filename = os.path.abspath(os.path.realpath(os.path.join(folder, name)))
+        folder_abs = os.path.abspath(os.path.realpath(folder))
+        filename = os.path.abspath(os.path.realpath(os.path.join(folder_abs, name)))
+        if os.path.commonpath([folder_abs, filename]) != folder_abs:
+            raise ValueError(f"Path traversal detected: {name}")
         if os.path.isfile(filename):
             return filename
 
-    return os.path.abspath(os.path.realpath(os.path.join(folders[0], name)))
+    default_folder_abs = os.path.abspath(os.path.realpath(folders[0]))
+    default_filename = os.path.abspath(os.path.realpath(os.path.join(default_folder_abs, name)))
+    if os.path.commonpath([default_folder_abs, default_filename]) != default_folder_abs:
+        raise ValueError(f"Path traversal detected: {name}")
+    return default_filename
 
 
 def get_enabled_loras(loras: list, remove_none=True) -> list:

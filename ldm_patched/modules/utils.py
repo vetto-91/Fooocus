@@ -6,7 +6,7 @@ import safetensors.torch
 import numpy as np
 from PIL import Image
 
-def load_torch_file(ckpt, safe_load=False, device=None):
+def load_torch_file(ckpt, safe_load=True, device=None):
     if device is None:
         device = torch.device("cpu")
     if ckpt.lower().endswith(".safetensors"):

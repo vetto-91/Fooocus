@@ -1,3 +1,5 @@
+import html
+
 progress_html = '''
 <div class="loader-container">
   <div class="loader"></div>
@@ -10,4 +12,6 @@ progress_html = '''
 
 
 def make_progress_html(number, text):
-    return progress_html.replace('*number*', str(number)).replace('*text*', text)
+    safe_number = html.escape(str(number), quote=True)
+    safe_text = html.escape(str(text), quote=True)
+    return progress_html.replace('*number*', safe_number).replace('*text*', safe_text)

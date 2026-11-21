@@ -1,5 +1,6 @@
 # based on https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/v1.6.0/modules/ui_gradio_extensions.py
 
+import json
 import os
 import gradio as gr
 import args_manager
@@ -42,7 +43,8 @@ def javascript_html():
     head += f'<meta name="samples-path" content="{samples_path}">\n'
 
     if args_manager.args.theme:
-        head += f'<script type="text/javascript">set_theme(\"{args_manager.args.theme}\");</script>\n'
+        safe_theme = json.dumps(str(args_manager.args.theme)).replace('</', '<\\/')
+        head += f'<script type="text/javascript">set_theme({safe_theme});</script>\n'
 
     return head
 
