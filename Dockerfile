@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.1-base-ubuntu24.04
+FROM nvidia/cuda:12.6.3-base-ubuntu24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ENV GRADIO_ANALYTICS_ENABLED=False
