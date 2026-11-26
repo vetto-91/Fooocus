@@ -15,7 +15,8 @@ COPY requirements_docker.txt requirements_versions.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/requirements_docker.txt -r /tmp/requirements_versions.txt && \
 	rm -f /tmp/requirements_docker.txt /tmp/requirements_versions.txt
 
-RUN adduser --disabled-password --gecos '' user && \
+RUN userdel -r ubuntu 2>/dev/null || true && \
+	adduser --disabled-password --gecos '' --uid 1000 user && \
 	mkdir -p /content/app /content/data/models /content/data/outputs
 
 COPY entrypoint.sh /content/entrypoint.sh
