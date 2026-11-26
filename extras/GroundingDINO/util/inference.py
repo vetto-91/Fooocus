@@ -1,3 +1,4 @@
+import argparse
 from typing import Tuple, List
 
 import ldm_patched.modules.model_management as model_management
@@ -33,6 +34,8 @@ class GroundingDinoModel(Model):
                 url="https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth",
                 file_name='groundingdino_swint_ogc.pth',
                 model_dir=path_inpaint)
+            if hasattr(torch.serialization, "add_safe_globals"):
+                torch.serialization.add_safe_globals([argparse.Namespace])
             model = load_model(model_config_path=self.config_file, model_checkpoint_path=filename)
 
             self.load_device = model_management.text_encoder_device()

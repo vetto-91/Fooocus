@@ -1,19 +1,18 @@
 FROM nvidia/cuda:12.4.1-base-ubuntu22.04
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 ENV GRADIO_ANALYTICS_ENABLED=False
 ENV HF_HUB_DISABLE_TELEMETRY=1
 ENV DO_NOT_TRACK=1
 ENV CMDARGS="--listen --disable-analytics --disable-metadata"
 
-RUN apt-get update -y && \
-	apt-get install -y curl libgl1 libglib2.0-0 python3-pip python-is-python3 git && \
+RUN apt-get update -y -o Acquire::Retries=3 && \
+	apt-get install -y --no-install-recommends curl libgl1 libglib2.0-0 python3-pip python-is-python3 git && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
 COPY requirements_docker.txt requirements_versions.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/requirements_docker.txt -r /tmp/requirements_versions.txt && \
 	rm -f /tmp/requirements_docker.txt /tmp/requirements_versions.txt
-RUN pip install --no-cache-dir xformers==0.0.23 --no-dependencies
 
 RUN adduser --disabled-password --gecos '' user && \
 	mkdir -p /content/app /content/data

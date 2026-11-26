@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - modernize
     tags:
       - 'v*'
   workflow_dispatch:
@@ -46,6 +47,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=edge,branch=main
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=modernize,enable=${{ github.ref == 'refs/heads/modernize' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
