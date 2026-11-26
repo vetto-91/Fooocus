@@ -11,8 +11,9 @@ networks:
 
 services:
   app:
-    build: .
-    image: fooocus-local:patched
+    image: ghcr.io/vetto-91/fooocus:latest
+    # Decommenta la riga sotto se preferisci fare il build locale invece del pull da GHCR:
+    # build: .
     restart: unless-stopped
     cap_drop:
       - ALL
