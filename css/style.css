@@ -99,7 +99,8 @@ div:has(> #positive_prompt) {
 }
 
 .advanced_check_row {
-  width: 330px !important;
+  max-width: 330px;
+  width: 100%;
 }
 
 .min_check {
@@ -239,8 +240,10 @@ div:has(> #positive_prompt) {
   overflow:inherit !important;
 }
 
-.gradio-container{
+.gradio-container {
   overflow: visible;
+  max-width: 100% !important;
+  width: 100% !important;
 }
 
 /* fullpage image viewer */
@@ -356,7 +359,7 @@ div:has(> #positive_prompt) {
     background-position: center;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
-    z-index: 100;
+    z-index: 9999;
     transition: transform 0.1s ease, opacity 0.3s ease;
 }
 
@@ -364,38 +367,27 @@ div:has(> #positive_prompt) {
     transform: translate(-140px, -140px);
 }
 
-/* scrollable box for style selections */
-.contain .tabs {
-  height: 100%;
-}
-
-.contain .tabs .tabitem.style_selections_tab {
-  height: 100%;
-}
-
-.contain .tabs .tabitem.style_selections_tab > div:first-child {
-  height: 100%;
-}
-
-.contain .tabs .tabitem.style_selections_tab .style_selections {
+/* scrollable box for style selections (Gradio 5 compatible) */
+.style_selections_tab .style_selections {
   min-height: 200px;
-  height: 100%;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto !important;
 }
 
-.contain .tabs .tabitem.style_selections_tab .style_selections .wrap[data-testid="checkbox-group"] {
-  position: absolute; /* remove this to disable scrolling within the checkbox-group */
-  overflow: auto;
-  padding-right: 2px;
-  max-height: 100%;
+.style_selections_tab .style_selections .wrap[data-testid="checkbox-group"],
+.style_selections_tab .style_selections .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-right: 4px;
 }
 
-.contain .tabs .tabitem.style_selections_tab .style_selections .wrap[data-testid="checkbox-group"] label {
-  /* max-width: calc(35% - 15px) !important; */ /* add this to enable 3 columns layout */
-  flex: calc(50% - 5px) !important;
+.style_selections_tab .style_selections label {
+  flex: 1 1 calc(50% - 6px) !important;
+  min-width: 120px;
 }
 
-.contain .tabs .tabitem.style_selections_tab .style_selections .wrap[data-testid="checkbox-group"] label span {
-  /* white-space:nowrap; */ /* add this to disable text wrapping (better choice for 3 columns layout) */
+.style_selections_tab .style_selections label span {
   overflow: hidden;
   text-overflow: ellipsis;
 }

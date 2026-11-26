@@ -149,7 +149,7 @@ title = f'Fooocus {fooocus_version.version}'
 if isinstance(args_manager.args.preset, str):
     title += ' ' + args_manager.args.preset
 
-shared.gradio_root = gr.Blocks(title=title, head=javascript_html(), css=css_content()).queue()
+shared.gradio_root = gr.Blocks(title=title, head=javascript_html(), css=css_content(), fill_width=True).queue()
 
 with shared.gradio_root:
     currentTask = gr.State(worker.AsyncTask(args=[]))
