@@ -275,9 +275,14 @@ def safe_load_embed_zip(embed_path):
 
 def expand_directory_list(directories):
     dirs = set()
+    visited = set()
     for x in directories:
+        real_x = os.path.realpath(x)
+        if real_x in visited:
+            continue
+        visited.add(real_x)
         dirs.add(x)
-        for root, subdir, file in os.walk(x, followlinks=True):
+        for root, subdirs, _ in os.walk(x, followlinks=False):
             dirs.add(root)
     return list(dirs)
 

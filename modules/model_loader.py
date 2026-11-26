@@ -1,3 +1,4 @@
+import hashlib
 import os
 from urllib.parse import urlparse
 from typing import Optional
@@ -13,14 +14,23 @@ ALLOWED_MODEL_HOSTS = {
 }
 
 
+def _file_sha256(path: str) -> str:
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def load_file_from_url(
         url: str,
         *,
         model_dir: str,
         progress: bool = True,
         file_name: Optional[str] = None,
+        expected_sha256: Optional[str] = None,
 ) -> str:
-    """Download a file from `url` into `model_dir`, using the file present if possible.
+    """Download a file from `url` into `model_dir` atomically, verifying host allowlist and optional SHA-256.
 
     Returns the path to the downloaded file.
     """
@@ -43,7 +53,23 @@ def load_file_from_url(
     if os.path.commonpath([model_dir_abs, cached_file]) != model_dir_abs:
         raise ValueError(f'Path traversal detected in model file name: {file_name}')
     if not os.path.exists(cached_file):
+        tmp_file = f'{cached_file}.part'
         print(f'Downloading: "{url}" to {cached_file}\n')
         from torch.hub import download_url_to_file
-        download_url_to_file(url, cached_file, progress=progress)
+        try:
+            download_url_to_file(url, tmp_file, progress=progress)
+            if expected_sha256:
+                actual_sha256 = _file_sha256(tmp_file)
+                if actual_sha256.lower() != expected_sha256.lower():
+                    raise ValueError(
+                        f'SHA-256 mismatch for {file_name}: expected {expected_sha256}, got {actual_sha256}'
+                    )
+            os.replace(tmp_file, cached_file)
+        except Exception:
+            if os.path.exists(tmp_file):
+                try:
+                    os.remove(tmp_file)
+                except OSError:
+                    pass
+            raise
     return cached_file

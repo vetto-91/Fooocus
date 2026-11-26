@@ -605,12 +605,19 @@ def get_metadata_parser(metadata_scheme: MetadataScheme) -> MetadataParser:
             raise NotImplementedError
 
 
+MAX_METADATA_LENGTH = 65536
+
+
 def read_info_from_image(file) -> tuple[str | None, MetadataScheme | None]:
     items = (file.info or {}).copy()
 
     parameters = items.pop('parameters', None)
     metadata_scheme = items.pop('fooocus_scheme', None)
     exif = items.pop('exif', None)
+
+    if isinstance(parameters, str) and len(parameters) > MAX_METADATA_LENGTH:
+        print(f'[Security] Ignored oversized image metadata ({len(parameters)} bytes)')
+        return None, None
 
     if parameters is not None and is_json(parameters):
         parameters = json.loads(parameters)
@@ -620,6 +627,10 @@ def read_info_from_image(file) -> tuple[str | None, MetadataScheme | None]:
         parameters = exif.get(0x9286, None)
         # 0x927C = MakerNote
         metadata_scheme = exif.get(0x927C, None)
+
+        if isinstance(parameters, str) and len(parameters) > MAX_METADATA_LENGTH:
+            print(f'[Security] Ignored oversized EXIF metadata ({len(parameters)} bytes)')
+            return None, None
 
         if is_json(parameters):
             parameters = json.loads(parameters)

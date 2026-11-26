@@ -7,7 +7,7 @@ ORIGINALDIR=/content/app
 # Make persistent dir from original dir
 function mklink () {
 	mkdir -p "$DATADIR/$1"
-	if [ ! -L "$ORIGINALDIR/$1" ]; then
+	if [ ! -e "$ORIGINALDIR/$1" ] && [ ! -L "$ORIGINALDIR/$1" ]; then
 		ln -s "$DATADIR/$1" "$ORIGINALDIR/$1"
 	fi
 }

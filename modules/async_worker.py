@@ -36,7 +36,7 @@ class AsyncTask:
         self.original_steps = self.steps
 
         self.aspect_ratios_selection = args.pop()
-        self.image_number = args.pop()
+        self.image_number = max(1, min(int(args.pop()), modules.config.default_max_image_number))
         self.output_format = args.pop()
         self.seed = int(args.pop())
         self.read_wildcards_in_order = args.pop()
@@ -68,10 +68,10 @@ class AsyncTask:
         self.sampler_name = args.pop()
         self.scheduler_name = args.pop()
         self.vae_name = args.pop()
-        self.overwrite_step = args.pop()
-        self.overwrite_switch = args.pop()
-        self.overwrite_width = args.pop()
-        self.overwrite_height = args.pop()
+        self.overwrite_step = max(-1, min(int(args.pop()), 200))
+        self.overwrite_switch = max(-1, min(int(args.pop()), 200))
+        self.overwrite_width = max(-1, min(int(args.pop()), 2048))
+        self.overwrite_height = max(-1, min(int(args.pop()), 2048))
         self.overwrite_vary_strength = args.pop()
         self.overwrite_upscale_strength = args.pop()
         self.mixing_image_prompt_and_vary_upscale = args.pop()

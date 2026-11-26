@@ -5,6 +5,7 @@ import json
 
 
 all_styles = []
+sorted_styles_filename = os.path.join(os.environ.get('DATADIR', '.'), 'sorted_styles.json')
 
 
 def try_load_sorted_styles(style_names, default_selected):
@@ -13,8 +14,8 @@ def try_load_sorted_styles(style_names, default_selected):
     all_styles = style_names
 
     try:
-        if os.path.exists('sorted_styles.json'):
-            with open('sorted_styles.json', 'rt', encoding='utf-8') as fp:
+        if os.path.exists(sorted_styles_filename):
+            with open(sorted_styles_filename, 'rt', encoding='utf-8') as fp:
                 sorted_styles = []
                 for x in json.load(fp):
                     if x in all_styles:
@@ -38,7 +39,7 @@ def sort_styles(selected):
     unselected = [y for y in all_styles if y not in selected]
     sorted_styles = selected + unselected
     try:
-        with open('sorted_styles.json', 'wt', encoding='utf-8') as fp:
+        with open(sorted_styles_filename, 'wt', encoding='utf-8') as fp:
             json.dump(sorted_styles, fp, indent=4)
     except Exception as e:
         print('Write style sorting failed.')

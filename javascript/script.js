@@ -273,9 +273,15 @@ function playNotification() {
 }
 
 function set_theme(theme) {
-    var gradioURL = window.location.href;
-    if (!gradioURL.includes('?__theme=')) {
-        window.location.replace(gradioURL + '?__theme=' + theme);
+    if (theme !== 'light' && theme !== 'dark') return;
+    try {
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has('__theme')) {
+            url.searchParams.set('__theme', theme);
+            window.location.replace(url.toString());
+        }
+    } catch (e) {
+        console.error('Invalid URL in set_theme:', e);
     }
 }
 

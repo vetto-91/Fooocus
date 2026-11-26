@@ -153,6 +153,8 @@ def clip_encode_single(clip, text, verbose=False):
     tokens = clip.tokenize(text)
     result = clip.encode_from_tokens(tokens, return_pooled=True)
     clip.fcs_cond_cache[text] = result
+    while len(clip.fcs_cond_cache) > 256:
+        clip.fcs_cond_cache.pop(next(iter(clip.fcs_cond_cache)))
     if verbose:
         print(f'[CLIP Encoded] {text}')
     return result

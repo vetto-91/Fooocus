@@ -81,7 +81,9 @@ def generate_mask_from_image(image: np.ndarray, mask_model: str = 'sam', extras=
     boxes[:, 2:] = boxes[:, 2:] + boxes[:, :2]
 
     sam_checkpoint = modules.config.download_sam_model(sam_options.model_type)
-    sam = sam_model_registry[sam_options.model_type](checkpoint=sam_checkpoint)
+    sam = sam_model_registry[sam_options.model_type](checkpoint=None)
+    sam_state_dict = torch.load(sam_checkpoint, map_location='cpu', weights_only=True)
+    sam.load_state_dict(sam_state_dict)
 
     sam_predictor = SamPredictor(sam)
     final_mask_tensor = torch.zeros((image.shape[0], image.shape[1]))

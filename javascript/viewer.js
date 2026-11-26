@@ -70,7 +70,15 @@ onUiLoaded(async () => {
     let spans = document.querySelectorAll('.aspect_ratios span');
 
     spans.forEach(function (span) {
-        span.innerHTML = span.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+        const raw = span.textContent || '';
+        const match = raw.match(/^([^<]+?)\s*<span[^>]*>(.*?)<\/span>\s*$/);
+        if (match) {
+            span.textContent = match[1] + ' ';
+            const ratioSpan = document.createElement('span');
+            ratioSpan.style.color = 'grey';
+            ratioSpan.textContent = match[2];
+            span.appendChild(ratioSpan);
+        }
     });
 
     const styleSelections = document.querySelector('.style_selections');

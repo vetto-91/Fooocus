@@ -215,7 +215,9 @@ def is_url(url_or_filename):
 
 def load_checkpoint(model,url_or_filename):
     if is_url(url_or_filename):
-        cached_file = download_cached_file(url_or_filename, check_hash=False, progress=True)
+        from modules.model_loader import load_file_from_url as safe_load_file_from_url
+        from modules.config import path_clip_vision
+        cached_file = safe_load_file_from_url(url_or_filename, model_dir=path_clip_vision, progress=True)
         checkpoint = torch.load(cached_file, map_location='cpu', weights_only=True) 
     elif os.path.isfile(url_or_filename):        
         checkpoint = torch.load(url_or_filename, map_location='cpu', weights_only=True) 

@@ -33,7 +33,7 @@ var contextMenuInit = function() {
 
         menuEntries.forEach(function(entry) {
             let contextMenuEntry = document.createElement('a');
-            contextMenuEntry.innerHTML = entry['name'];
+            contextMenuEntry.textContent = entry['name'];
             contextMenuEntry.addEventListener("click", function() {
                 entry['func']();
             });

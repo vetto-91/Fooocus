@@ -3,6 +3,8 @@ import random
 import os
 import json
 import time
+from PIL import Image as PILImage
+PILImage.MAX_IMAGE_PIXELS = 64_000_000
 import shared
 import modules.config
 import fooocus_version
@@ -149,7 +151,7 @@ title = f'Fooocus {fooocus_version.version}'
 if isinstance(args_manager.args.preset, str):
     title += ' ' + args_manager.args.preset
 
-shared.gradio_root = gr.Blocks(title=title, head=javascript_html(), css=css_content(), fill_width=True).queue()
+shared.gradio_root = gr.Blocks(title=title, head=javascript_html(), css=css_content(), fill_width=True).queue(max_size=64)
 
 with shared.gradio_root:
     currentTask = gr.State(worker.AsyncTask(args=[]))
