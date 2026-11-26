@@ -1,6 +1,7 @@
 import os
 import importlib
 import importlib.util
+import shlex
 import shutil
 import subprocess
 import sys
@@ -36,9 +37,10 @@ def run(command, desc=None, errdesc=None, custom_env=None, live: bool = default_
     if desc is not None:
         print(desc)
 
+    cmd_args = shlex.split(command, posix=(os.name != 'nt')) if isinstance(command, str) else command
     run_kwargs = {
-        "args": command,
-        "shell": True,
+        "args": cmd_args,
+        "shell": False,
         "env": os.environ if custom_env is None else custom_env,
         "encoding": 'utf8',
         "errors": 'ignore',

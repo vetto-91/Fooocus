@@ -13,6 +13,11 @@ services:
   app:
     build: .
     image: fooocus-local:patched
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     expose:
       - "7865"
     networks:

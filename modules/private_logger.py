@@ -12,6 +12,7 @@ from modules.meta_parser import MetadataParser, get_exif
 from modules.util import generate_temp_filename
 
 log_cache = {}
+MAX_LOG_CACHE_ENTRIES = 5
 
 
 def get_current_html_path(output_format=None):
@@ -139,5 +140,7 @@ def log(img, metadata, metadata_parser: MetadataParser | None = None, output_for
     print(f'Image generated with private log at: {html_name}')
 
     log_cache[html_name] = middle_part
+    while len(log_cache) > MAX_LOG_CACHE_ENTRIES:
+        log_cache.pop(next(iter(log_cache)))
 
     return local_temp_filename
