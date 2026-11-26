@@ -149,6 +149,43 @@ def HWC3(x):
         return y
 
 
+def normalize_image_editor_value(val):
+    """Convert Gradio 5 ImageEditor dict {'background', 'layers', 'composite'}
+    into Fooocus's {'image': RGB ndarray, 'mask': (H, W, 3) uint8 ndarray}."""
+    if val is None or not isinstance(val, dict):
+        return val
+    if 'image' in val and 'mask' in val:
+        return val
+    if 'background' not in val:
+        return val
+
+    bg = val.get('background')
+    if bg is None:
+        return None
+    bg = np.asarray(bg)
+    if bg.ndim == 3 and bg.shape[2] == 4:
+        bg = bg[:, :, :3]
+    bg = bg.astype(np.uint8)
+
+    h, w = bg.shape[:2]
+    mask = np.zeros((h, w, 3), dtype=np.uint8)
+    for layer in (val.get('layers') or []):
+        if layer is None:
+            continue
+        layer_arr = np.asarray(layer)
+        if layer_arr.ndim != 3:
+            continue
+        if layer_arr.shape[0] != h or layer_arr.shape[1] != w:
+            layer_arr = np.array(Image.fromarray(layer_arr.astype(np.uint8)).resize((w, h), resample=Image.NEAREST))
+        if layer_arr.shape[2] == 4:
+            painted = layer_arr[:, :, 3] > 0
+        else:
+            painted = np.max(layer_arr, axis=2) > 0
+        mask[painted] = 255
+
+    return {'image': bg, 'mask': mask}
+
+
 def remove_empty_str(items, default=None):
     items = [x for x in items if x != ""]
     if len(items) == 0 and default is not None:

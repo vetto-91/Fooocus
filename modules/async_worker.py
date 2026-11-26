@@ -10,7 +10,7 @@ patch_all()
 class AsyncTask:
     def __init__(self, args):
         from modules.flags import Performance, MetadataScheme, ip_list, disabled
-        from modules.util import get_enabled_loras
+        from modules.util import get_enabled_loras, normalize_image_editor_value
         from modules.config import default_max_lora_number
         import args_manager
 
@@ -52,9 +52,9 @@ class AsyncTask:
         self.uov_method = args.pop()
         self.uov_input_image = args.pop()
         self.outpaint_selections = args.pop()
-        self.inpaint_input_image = args.pop()
+        self.inpaint_input_image = normalize_image_editor_value(args.pop())
         self.inpaint_additional_prompt = args.pop()
-        self.inpaint_mask_image_upload = args.pop()
+        self.inpaint_mask_image_upload = normalize_image_editor_value(args.pop())
 
         self.disable_preview = args.pop()
         self.disable_intermediate_results = args.pop()
