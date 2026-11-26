@@ -7,7 +7,9 @@ ORIGINALDIR=/content/app
 # Make persistent dir from original dir
 function mklink () {
 	mkdir -p "$DATADIR/$1"
-	ln -s "$DATADIR/$1" "$ORIGINALDIR"
+	if [ ! -L "$ORIGINALDIR/$1" ]; then
+		ln -s "$DATADIR/$1" "$ORIGINALDIR/$1"
+	fi
 }
 
 # Copy old files from import dir

@@ -1,5 +1,6 @@
 import json
 import os
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 
@@ -8,18 +9,23 @@ from modules.util import sha256, HASH_SHA256_LENGTH, get_file_from_folder_list
 
 hash_cache_filename = 'hash_cache.txt'
 hash_cache = {}
+hash_cache_lock = threading.Lock()
 
 
 def sha256_from_cache(filepath):
     global hash_cache
-    if filepath not in hash_cache:
-        print(f"[Cache] Calculating sha256 for {filepath}")
-        hash_value = sha256(filepath)
-        print(f"[Cache] sha256 for {filepath}: {hash_value}")
+    with hash_cache_lock:
+        if filepath in hash_cache:
+            return hash_cache[filepath]
+
+    print(f"[Cache] Calculating sha256 for {filepath}")
+    hash_value = sha256(filepath)
+    print(f"[Cache] sha256 for {filepath}: {hash_value}")
+    with hash_cache_lock:
         hash_cache[filepath] = hash_value
         save_cache_to_file(filepath, hash_value)
 
-    return hash_cache[filepath]
+    return hash_value
 
 
 def load_cache_from_file():
@@ -31,7 +37,7 @@ def load_cache_from_file():
                 for line in fp:
                     entry = json.loads(line)
                     for filepath, hash_value in entry.items():
-                        if not os.path.exists(filepath) or not isinstance(hash_value, str) and len(hash_value) != HASH_SHA256_LENGTH:
+                        if not os.path.exists(filepath) or not isinstance(hash_value, str) or len(hash_value) != HASH_SHA256_LENGTH:
                             print(f'[Cache] Skipping invalid cache entry: {filepath}')
                             continue
                         hash_cache[filepath] = hash_value

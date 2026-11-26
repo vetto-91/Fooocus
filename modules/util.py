@@ -485,7 +485,8 @@ def apply_wildcards(wildcard_text, rng, i, read_wildcards_in_order) -> str:
         for placeholder in placeholders:
             try:
                 matches = [x for x in modules.config.wildcard_filenames if os.path.splitext(os.path.basename(x))[0] == placeholder]
-                words = open(os.path.join(modules.config.path_wildcards, matches[0]), encoding='utf-8').read().splitlines()
+                with open(os.path.join(modules.config.path_wildcards, matches[0]), encoding='utf-8') as f:
+                    words = f.read().splitlines()
                 words = [x for x in words if x != '']
                 assert len(words) > 0
                 if read_wildcards_in_order:

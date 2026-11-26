@@ -38,8 +38,8 @@ class FooocusExpansion:
     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(path_fooocus_expansion)
 
-        positive_words = open(os.path.join(path_fooocus_expansion, 'positive.txt'),
-                              encoding='utf-8').read().splitlines()
+        with open(os.path.join(path_fooocus_expansion, 'positive.txt'), encoding='utf-8') as f:
+            positive_words = f.read().splitlines()
         positive_words = ['Ġ' + x.lower() for x in positive_words if x != '']
 
         self.logits_bias = torch.zeros((1, len(self.tokenizer.vocab)), dtype=torch.float32) + neg_inf

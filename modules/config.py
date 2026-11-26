@@ -56,7 +56,8 @@ def try_load_deprecated_user_path_config():
         return
 
     try:
-        deprecated_config_dict = json.load(open('user_path_config.txt', "r", encoding="utf-8"))
+        with open('user_path_config.txt', "r", encoding="utf-8") as f:
+            deprecated_config_dict = json.load(f)
 
         def replace_config(old_key, new_key):
             if old_key in deprecated_config_dict:

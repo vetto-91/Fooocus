@@ -99,7 +99,8 @@ def log(img, metadata, metadata_parser: MetadataParser | None = None, output_for
 
     if middle_part == "":
         if os.path.exists(html_name):
-            existing_split = open(html_name, 'r', encoding='utf-8').read().split('<!--fooocus-log-split-->')
+            with open(html_name, 'r', encoding='utf-8') as f:
+                existing_split = f.read().split('<!--fooocus-log-split-->')
             if len(existing_split) == 3:
                 middle_part = existing_split[1]
             else:
